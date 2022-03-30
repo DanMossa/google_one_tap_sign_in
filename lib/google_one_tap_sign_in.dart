@@ -15,7 +15,6 @@ part 'models/sign_in_result.dart';
 /// Enjoy coding ☕
 ///
 class GoogleOneTapSignIn {
-
   /// [GoogleOneTapSignIn] channel [MethodChannel]
   static const MethodChannel _channel = MethodChannel('google_one_tap_sign_in');
 
@@ -46,15 +45,14 @@ class GoogleOneTapSignIn {
   /// ```
   ///
   static Future<SignInResult?> startSignIn(
-      {required String webClientId}) async {
-    var data = await _channel
-        .invokeMethod('startSignIn', {"web_client_id": webClientId});
+      {required String webClientId, String? hashedNonce}) async {
+    var data = await _channel.invokeMethod(
+        'startSignIn', {"web_client_id": webClientId, "hashed_nonce": hashedNonce});
     if (data == null) return null;
     if (data == "TEMPORARY_BLOCKED") return null;
     var json = jsonDecode(data);
     return SignInResult.fromMap(json);
   }
-
 
   ///
   /// Start Advance Sign In One Tap Sign In
@@ -100,8 +98,7 @@ class GoogleOneTapSignIn {
   ///
   static Future<SignInData> handleSignIn({required String webClientId}) async {
     var signInData = SignInData();
-    var data = await _channel
-        .invokeMethod('startSignIn', {"web_client_id": webClientId});
+    var data = await _channel.invokeMethod('startSignIn', {"web_client_id": webClientId});
 
     switch (data) {
       case "TEMPORARY_BLOCKED":

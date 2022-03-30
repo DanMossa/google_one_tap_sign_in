@@ -46,6 +46,7 @@ class GoogleOneTapSignInPlugin: FlutterPlugin, MethodCallHandler, MethodContract
   private var activity: Activity? = null
   private var context: Context? = null
   private var webCLientId: String? = null
+  private var hashedNonce: String? = null
   private var result: MethodChannel.Result? = null
 
   /**
@@ -74,6 +75,7 @@ class GoogleOneTapSignInPlugin: FlutterPlugin, MethodCallHandler, MethodContract
       }
       call.method == "startSignIn" -> {
         webCLientId = call.argument("web_client_id")
+        hashedNonce = call.argument("hashed_nonce")
         startSignIn()
       }
       else -> {
@@ -111,6 +113,7 @@ class GoogleOneTapSignInPlugin: FlutterPlugin, MethodCallHandler, MethodContract
       .setGoogleIdTokenRequestOptions(
         BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
           .setSupported(true)
+          .setNonce(hashedNonce)
           // Your server's client ID, not your Android client ID.
           .setServerClientId(webCLientId)
           // Only show accounts previously used to sign in.
